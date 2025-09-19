@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Despensa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f7ee;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #4caf50;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .input-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4caf50;
+        }
+        
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-adicionar {
+            align-self: flex-end;
+            height: 40px;
+        }
+        
+        .estoque-section {
+            margin-top: 30px;
+        }
+        
+        h2 {
+            color: #4caf50;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .item-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .quantity-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4caf50;
+        }
+        
+        .quantity-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-quantity {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            font-size: 18px;
+        }
+        
+        .btn-remove {
+            background-color: #f44336;
+        }
+        
+        .btn-remove:hover {
+            background-color: #d32f2f;
+        }
+        
+        .btn-add {
+            background-color: #4caf50;
+        }
+        
+        .btn-delete {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ffebee;
+            color: #f44336;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            padding: 0;
+            font-size: 14px;
+        }
+        
+        .btn-delete:hover {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .empty-message {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+            grid-column: 1 / -1;
+        }
+        
+        .categoria {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .btn-adicionar {
+                align-self: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gestão de Despensa</h1>
+            <p class="description">Controle o que você tem em casa e sua lista de compras</p>
+        </header>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="item">Item:</label>
+                <input type="text" id="item" placeholder="Digite o nome do item">
+            </div>
+            
+            <div class="input-group">
+                <label for="quantidade">Quantidade Inicial:</label>
+                <input type="number" id="quantidade" placeholder="Qtd" value="1" min="0">
+            </div>
+            
+            <div class="input-group">
+                <label for="categoria">Categoria (opcional):</label>
+                <input type="text" id="categoria" placeholder="Ex: Hortifruti, Limpeza">
+            </div>
+            
+            <button class="btn-adicionar" id="adicionar">Adicionar</button>
+        </div>
+        
+        <div class="estoque-section">
+            <h2>Itens na Despensa</h2>
+            <div class="item-grid" id="lista-estoque">
+                <p class="empty-message">Nenhum item adicionado ainda. Use o formulário acima para adicionar itens.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const itemInput = document.getElementById('item');
+            const quantidadeInput = document.getElementById('quantidade');
+            const categoriaInput = document.getElementById('categoria');
+            const adicionarBtn = document.getElementById('adicionar');
+            const listaEstoque = document.getElementById('lista-estoque');
+            
+            // Carregar itens salvos do localStorage
+            carregarItens();
+            
+            // Adicionar evento de clique ao botão
+            adicionarBtn.addEventListener('click', adicionarItem);
+            
+            // Adicionar evento de tecla Enter no campo de item
+            itemInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    adicionarItem();
+                }
+            });
+            
+            // Adicionar evento de tecla Enter no campo de quantidade
+            quantidadeInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    adicionarItem();
+                }
+            });
+            
+            function adicionarItem() {
+                const item = itemInput.value.trim();
+                const quantidade = parseInt(quantidadeInput.value);
+                const categoria = categoriaInput.value.trim();
+                
+                if (!item || isNaN(quantidade) || quantidade < 0) {
+                    alert('Por favor, preencha o nome do item e uma quantidade válida.');
+                    return;
+                }
+                
+                // Adicionar à lista visual
+                adicionarItemLista(item, quantidade, categoria);
+                
+                // Salvar no localStorage
+                salvarItem(item, quantidade, categoria);
+                
+                // Limpar os campos
+                itemInput.value = '';
+                quantidadeInput.value = '1';
+                categoriaInput.value = '';
+                itemInput.focus();
+            }
+            
+            function adicionarItemLista(item, quantidade, categoria) {
+                // Remover mensagem de lista vazia se existir
+                const emptyMessage = listaEstoque.querySelector('.empty-message');
+                if (emptyMessage) {
+                    emptyMessage.remove();
+                }
+                
+                // Criar card do item
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                itemCard.dataset.item = item;
+                
+                const itemName = document.createElement('div');
+                itemName.className = 'item-name';
+                itemName.textContent = item;
+                
+                if (categoria) {
+                    const itemCategoria = document.createElement('div');
+                    itemCategoria.className = 'categoria';
+                    itemCategoria.textContent = categoria;
+                    itemName.appendChild(itemCategoria);
+                }
+                
+                const itemQuantity = document.createElement('div');
+                itemQuantity.className = 'item-quantity';
+                
+                const quantityValue = document.createElement('span');
+                quantityValue.className = 'quantity-value';
+                quantityValue.textContent = quantidade;
+                
+                const quantityButtons = document.createElement('div');
+                quantityButtons.className = 'quantity-buttons';
+                
+                const btnRemove = document.createElement('button');
+                btnRemove.className = 'btn-quantity btn-remove';
+                btnRemove.textContent = '-';
+                btnRemove.onclick = function() {
+                    if (parseInt(quantityValue.textContent) > 0) {
+                        quantityValue.textContent = parseInt(quantityValue.textContent) - 1;
+                        atualizarItemNoLocalStorage(item, parseInt(quantityValue.textContent), categoria);
+                    }
+                };
+                
+                const btnAdd = document.createElement('button');
+                btnAdd.className = 'btn-quantity btn-add';
+                btnAdd.textContent = '+';
+                btnAdd.onclick = function() {
+                    quantityValue.textContent = parseInt(quantityValue.textContent) + 1;
+                    atualizarItemNoLocalStorage(item, parseInt(quantityValue.textContent), categoria);
+                };
+                
+                const btnDelete = document.createElement('button');
+                btnDelete.className = 'btn-delete';
+                btnDelete.textContent = '×';
+                btnDelete.onclick = function() {
+                    itemCard.remove();
+                    removerItemDoLocalStorage(item);
+                    verificarListaVazia();
+                };
+                
+                quantityButtons.appendChild(btnRemove);
+                quantityButtons.appendChild(btnAdd);
+                
+                itemQuantity.appendChild(quantityValue);
+                itemQuantity.appendChild(quantityButtons);
+                
+                itemCard.appendChild(btnDelete);
+                itemCard.appendChild(itemName);
+                itemCard.appendChild(itemQuantity);
+                
+                listaEstoque.appendChild(itemCard);
+            }
+            
+            function salvarItem(item, quantidade, categoria) {
+                let itens = JSON.parse(localStorage.getItem('itensDespensa')) || [];
+                
+                // Verificar se o item já existe
+                const index = itens.findIndex(i => i.item === item);
+                
+                if (index !== -1) {
+                    // Atualizar quantidade se o item já existe
+                    itens[index].quantidade += quantidade;
+                } else {
+                    // Adicionar novo item
+                    itens.push({ item, quantidade, categoria });
+                }
+                
+                localStorage.setItem('itensDespensa', JSON.stringify(itens));
+            }
+            
+            function atualizarItemNoLocalStorage(item, quantidade, categoria) {
+                let itens = JSON.parse(localStorage.getItem('itensDespensa')) || [];
+                const index = itens.findIndex(i => i.item === item);
+                
+                if (index !== -1) {
+                    itens[index].quantidade = quantidade;
+                    localStorage.setItem('itensDespensa', JSON.stringify(itens));
+                }
+            }
+            
+            function removerItemDoLocalStorage(item) {
+                let itens = JSON.parse(localStorage.getItem('itensDespensa')) || [];
+                itens = itens.filter(i => i.item !== item);
+                localStorage.setItem('itensDespensa', JSON.stringify(itens));
+            }
+            
+            function carregarItens() {
+                const itens = JSON.parse(localStorage.getItem('itensDespensa')) || [];
+                
+                if (itens.length > 0) {
+                    const emptyMessage = listaEstoque.querySelector('.empty-message');
+                    if (emptyMessage) {
+                        emptyMessage.remove();
+                    }
+                    
+                    itens.forEach(({ item, quantidade, categoria }) => {
+                        adicionarItemLista(item, quantidade, categoria);
+                    });
+                }
+            }
+            
+            function verificarListaVazia() {
+                const itens = listaEstoque.querySelectorAll('.item-card');
+                if (itens.length === 0) {
+                    const emptyMessage = document.createElement('p');
+                    emptyMessage.className = 'empty-message';
+                    emptyMessage.textContent = 'Nenhum item adicionado ainda. Use o formulário acima para adicionar itens.';
+                    listaEstoque.appendChild(emptyMessage);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
